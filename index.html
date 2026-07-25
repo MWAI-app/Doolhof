@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doolhof</title>
+    <link rel="stylesheet" href="style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./vendor/three/three.module.js",
+          "three/addons/": "./vendor/three/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="hud">
+      <div id="hud-level">Level 1</div>
+      <div id="hud-timer">00:00</div>
+      <div id="hud-score">Score: 0</div>
+    </div>
+
+    <div id="overlay">
+      <div id="overlay-box">
+        <h1>Doolhof</h1>
+        <p>Vind de uitgang met WASD / pijltjestoetsen en je muis.</p>
+        <p>Klik om te beginnen (muis wordt vergrendeld).</p>
+        <button id="start-btn">Start</button>
+      </div>
+    </div>
+
+    <div id="level-complete" class="hidden">
+      <div id="level-complete-box"></div>
+    </div>
+
+    <div id="crosshair"></div>
+
+    <script type="module" src="js/game.js"></script>
+  </body>
+</html>
