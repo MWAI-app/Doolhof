@@ -232,11 +232,12 @@ function completeLevel() {
 
   const trophy = getTrophy(level);
   const mottoHtml = trophy.motto ? `<p class="trophy-motto">${trophy.motto}</p>` : "";
+  const trophyLabelText = trophy.count > 1 ? `${trophy.label} ×${trophy.count}` : trophy.label;
 
   levelCompleteBox.innerHTML = `
     <div class="trophy-wrap">${trophy.svg}</div>
     <h2>Level ${level} voltooid!</h2>
-    <p class="trophy-label">${trophy.label}</p>
+    <p class="trophy-label">${trophyLabelText}</p>
     ${mottoHtml}
     <p>Tijd: ${levelTime.toFixed(1)}s</p>
     <p>+${points} punten</p>
@@ -251,7 +252,7 @@ function completeLevel() {
   shareBtn.addEventListener("click", async (e) => {
     e.stopPropagation();
     shareStatus.textContent = "";
-    const result = await shareProgress(level, score, trophy.label);
+    const result = await shareProgress(level, score, trophyLabelText);
     if (result === "copied") {
       shareStatus.textContent = "Tekst gekopieerd naar klembord!";
     } else if (result === "unavailable") {
