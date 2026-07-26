@@ -24,8 +24,8 @@
     <div id="overlay">
       <div id="overlay-box">
         <h1>Doolhof</h1>
-        <p>Vind de uitgang met WASD / pijltjestoetsen en je muis.</p>
-        <p>Klik om te beginnen (muis wordt vergrendeld).</p>
+        <p id="overlay-instructions">Vind de uitgang met WASD / pijltjestoetsen en je muis.</p>
+        <p id="overlay-hint">Klik om te beginnen (muis wordt vergrendeld).</p>
         <button id="start-btn">Start</button>
       </div>
     </div>
@@ -35,6 +35,11 @@
     </div>
 
     <div id="crosshair"></div>
+
+    <button id="fullscreen-btn" class="hidden" aria-label="Volledig scherm">⛶</button>
+    <div id="rotate-warning" class="hidden">
+      <div>Draai je tablet naar liggende stand voor de beste ervaring.</div>
+    </div>
 
     <script type="module" src="js/game.js"></script>
   </body>

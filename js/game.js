@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
 import { generateMaze } from "./maze.js";
+import { isTouchDevice, setupTouchControls } from "./touch-controls.js";
 
 const CELL_SIZE = 4;
 const WALL_HEIGHT = 3;
@@ -8,6 +9,7 @@ const WALL_THICKNESS = 0.2;
 const PLAYER_RADIUS = 0.35;
 const PLAYER_HEIGHT = 1.6;
 const MOVE_SPEED = 5;
+const TURN_SPEED = 2.2;
 const START_MAZE_SIZE = 6;
 const MAX_MAZE_SIZE = 20;
 
@@ -15,9 +17,16 @@ const hudLevel = document.getElementById("hud-level");
 const hudTimer = document.getElementById("hud-timer");
 const hudScore = document.getElementById("hud-score");
 const overlay = document.getElementById("overlay");
+const overlayInstructions = document.getElementById("overlay-instructions");
+const overlayHint = document.getElementById("overlay-hint");
 const startBtn = document.getElementById("start-btn");
 const levelCompleteEl = document.getElementById("level-complete");
 const levelCompleteBox = document.getElementById("level-complete-box");
+const fullscreenBtn = document.getElementById("fullscreen-btn");
+const rotateWarning = document.getElementById("rotate-warning");
+
+const touchMode = isTouchDevice();
+const touchState = touchMode ? setupTouchControls() : null;
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0a0a12);
@@ -27,6 +36,7 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.domElement.style.touchAction = "none";
 document.body.appendChild(renderer.domElement);
 
 window.addEventListener("resize", () => {
@@ -43,6 +53,33 @@ scene.add(camera);
 const controls = new PointerLockControls(camera, renderer.domElement);
 const player = controls.getObject();
 scene.add(player);
+
+function enterImmersiveMode() {
+  document.documentElement.requestFullscreen?.().catch(() => {});
+  screen.orientation?.lock?.("landscape").catch(() => {});
+}
+
+if (touchMode) {
+  document.body.classList.add("touch-mode");
+  overlayInstructions.textContent = "Vind de uitgang. Linker joystick: lopen. Rechter joystick: rondkijken.";
+  overlayHint.textContent = "Tik op Start om te beginnen.";
+
+  fullscreenBtn.classList.remove("hidden");
+  fullscreenBtn.addEventListener("click", () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen?.();
+    } else {
+      enterImmersiveMode();
+    }
+  });
+
+  const updateOrientationWarning = () => {
+    rotateWarning.classList.toggle("hidden", window.innerWidth >= window.innerHeight);
+  };
+  window.addEventListener("resize", updateOrientationWarning);
+  window.addEventListener("orientationchange", updateOrientationWarning);
+  updateOrientationWarning();
+}
 
 const wallMaterial = new THREE.MeshStandardMaterial({ color: 0x7788aa, roughness: 0.8 });
 const floorMaterial = new THREE.MeshStandardMaterial({ color: 0x30323e, roughness: 1 });
@@ -199,7 +236,11 @@ function completeLevel() {
     levelCompleteEl.classList.add("hidden");
     levelCompleteEl.removeEventListener("click", resume);
     startLevel(nextLevel);
-    controls.lock();
+    if (touchMode) {
+      running = true;
+    } else {
+      controls.lock();
+    }
     transitioning = false;
   };
   levelCompleteEl.addEventListener("click", resume);
@@ -251,7 +292,13 @@ document.addEventListener("keydown", onKeyDown);
 document.addEventListener("keyup", onKeyUp);
 
 startBtn.addEventListener("click", () => {
-  controls.lock();
+  if (touchMode) {
+    overlay.classList.add("hidden");
+    running = true;
+    enterImmersiveMode();
+  } else {
+    controls.lock();
+  }
 });
 
 controls.addEventListener("lock", () => {
@@ -268,42 +315,40 @@ controls.addEventListener("unlock", () => {
 
 const forwardVec = new THREE.Vector3();
 const rightVec = new THREE.Vector3();
+const moveVec = new THREE.Vector3();
 
 function updateMovement(delta) {
   if (!running) return;
+
+  if (touchState && touchState.look.x !== 0) {
+    camera.rotation.y -= touchState.look.x * TURN_SPEED * delta;
+  }
 
   camera.getWorldDirection(forwardVec);
   forwardVec.y = 0;
   forwardVec.normalize();
   rightVec.set(forwardVec.z, 0, -forwardVec.x);
 
-  let dx = 0;
-  let dz = 0;
-  if (keys.forward) {
-    dx += forwardVec.x;
-    dz += forwardVec.z;
-  }
-  if (keys.back) {
-    dx -= forwardVec.x;
-    dz -= forwardVec.z;
-  }
-  if (keys.right) {
-    dx += rightVec.x;
-    dz += rightVec.z;
-  }
-  if (keys.left) {
-    dx -= rightVec.x;
-    dz -= rightVec.z;
+  let inputForward = 0;
+  let inputStrafe = 0;
+  if (keys.forward) inputForward += 1;
+  if (keys.back) inputForward -= 1;
+  if (keys.right) inputStrafe += 1;
+  if (keys.left) inputStrafe -= 1;
+  if (touchState) {
+    inputForward += touchState.move.y;
+    inputStrafe += touchState.move.x;
   }
 
-  const len = Math.hypot(dx, dz);
+  moveVec.set(0, 0, 0).addScaledVector(forwardVec, inputForward).addScaledVector(rightVec, inputStrafe);
+  const len = moveVec.length();
   if (len > 0) {
-    dx = (dx / len) * MOVE_SPEED * delta;
-    dz = (dz / len) * MOVE_SPEED * delta;
+    const speed = Math.min(len, 1) * MOVE_SPEED * delta;
+    moveVec.normalize().multiplyScalar(speed);
 
     const pos = player.position;
-    if (canMoveTo(pos.x + dx, pos.z)) pos.x += dx;
-    if (canMoveTo(pos.x, pos.z + dz)) pos.z += dz;
+    if (canMoveTo(pos.x + moveVec.x, pos.z)) pos.x += moveVec.x;
+    if (canMoveTo(pos.x, pos.z + moveVec.z)) pos.z += moveVec.z;
   }
 
   const dist = Math.hypot(player.position.x - exitCenter.x, player.position.z - exitCenter.y);
