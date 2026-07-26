@@ -36,9 +36,16 @@ Op een touch-apparaat schakelt het spel automatisch naar twee virtuele joysticks
 - Elk volgend level is groter en dus moeilijker.
 - Je scoort punten op basis van hoe snel je een level uitloopt; hogere levels leveren meer punten op.
 - De totale speeltijd en score zijn zichtbaar linksboven in beeld.
+- Elk voltooid level levert een trofee op:
+  - Level 1 t/m 5: bronzen munt (Boer)
+  - Level 6 t/m 10: zilveren munt (Queen)
+  - Level 11 t/m 15: gouden munt (King)
+  - Level 16 t/m 20: diamanten munt (Ace)
+  - Level 21 en verder: de kampioensbokaal met een draakje — "You are on top of the world!"
 
 ## Techniek
 
 - [Three.js](https://threejs.org/) (meegeleverd in `vendor/three/`, geen internetverbinding nodig om te spelen)
 - Doolhofgeneratie: `js/maze.js`
 - Scene, besturing, botsingsdetectie en spellogica: `js/game.js`
+- Trofeeën (SVG-munten en bokaal): `js/trophies.js`

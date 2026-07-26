@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { PointerLockControls } from "three/addons/controls/PointerLockControls.js";
 import { generateMaze } from "./maze.js";
 import { isTouchDevice, setupTouchControls } from "./touch-controls.js";
+import { getTrophy } from "./trophies.js";
 
 const CELL_SIZE = 4;
 const WALL_HEIGHT = 3;
@@ -223,8 +224,14 @@ function completeLevel() {
   const points = Math.max(100, Math.round(2000 - levelTime * 15)) * level;
   score += points;
 
+  const trophy = getTrophy(level);
+  const mottoHtml = trophy.motto ? `<p class="trophy-motto">${trophy.motto}</p>` : "";
+
   levelCompleteBox.innerHTML = `
+    <div class="trophy-wrap">${trophy.svg}</div>
     <h2>Level ${level} voltooid!</h2>
+    <p class="trophy-label">${trophy.label}</p>
+    ${mottoHtml}
     <p>Tijd: ${levelTime.toFixed(1)}s</p>
     <p>+${points} punten</p>
     <p>Klik om verder te gaan naar level ${level + 1}</p>
