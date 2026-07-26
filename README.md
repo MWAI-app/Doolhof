@@ -14,9 +14,20 @@ Ga dan naar `http://localhost:8000` en klik op **Start**.
 
 ## Besturing
 
+### Desktop
+
 - **WASD** of **pijltjestoetsen**: bewegen
 - **Muis**: rondkijken (muis wordt vergrendeld na klikken op Start)
 - **Esc**: pauzeren / muis vrijgeven
+
+### Tablet / touch
+
+Op een touch-apparaat schakelt het spel automatisch naar twee virtuele joysticks (geen toetsenbord of muis nodig):
+
+- **Linker joystick** (linkerhelft van het scherm): lopen — omhoog/omlaag is vooruit/achteruit, links/rechts is zijwaarts strafen.
+- **Rechter joystick** (rechterhelft van het scherm): rondkijken — links/rechts draait de kijkrichting.
+- De joysticks verschijnen op de plek waar je duim het scherm raakt en verdwijnen weer zodra je loslaat.
+- Gebruik de knop rechtsboven om naar volledig scherm te schakelen; speel bij voorkeur in liggende stand (landscape).
 
 ## Spelregels
 
