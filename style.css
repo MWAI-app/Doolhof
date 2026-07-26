@@ -120,6 +120,28 @@ canvas {
   opacity: 0.85;
 }
 
+#share-btn {
+  margin: 10px 0;
+  padding: 8px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  background: #ff6f3c;
+  color: #fff;
+  cursor: pointer;
+}
+
+#share-btn:hover {
+  background: #ff5a1f;
+}
+
+#level-complete-box .share-status {
+  font-size: 13px;
+  min-height: 16px;
+  opacity: 0.8;
+}
+
 @keyframes trophy-pop {
   0% {
     transform: scale(0.3) rotate(-15deg);

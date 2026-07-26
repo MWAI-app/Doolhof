@@ -4,6 +4,7 @@ import { generateMaze } from "./maze.js";
 import { isTouchDevice, setupTouchControls } from "./touch-controls.js";
 import { getTrophy } from "./trophies.js";
 import { loadProgress, saveProgress, clearProgress } from "./save.js";
+import { shareProgress } from "./share.js";
 
 const CELL_SIZE = 4;
 const WALL_HEIGHT = 3;
@@ -239,9 +240,24 @@ function completeLevel() {
     ${mottoHtml}
     <p>Tijd: ${levelTime.toFixed(1)}s</p>
     <p>+${points} punten</p>
+    <button id="share-btn" type="button">Deel je resultaat</button>
+    <p class="share-status" aria-live="polite"></p>
     <p>Klik om verder te gaan naar level ${level + 1}</p>
   `;
   levelCompleteEl.classList.remove("hidden");
+
+  const shareBtn = document.getElementById("share-btn");
+  const shareStatus = levelCompleteBox.querySelector(".share-status");
+  shareBtn.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    shareStatus.textContent = "";
+    const result = await shareProgress(level, score, trophy.label);
+    if (result === "copied") {
+      shareStatus.textContent = "Tekst gekopieerd naar klembord!";
+    } else if (result === "unavailable") {
+      shareStatus.textContent = "Delen is niet beschikbaar in deze browser.";
+    }
+  });
 
   const resume = () => {
     levelCompleteEl.classList.add("hidden");

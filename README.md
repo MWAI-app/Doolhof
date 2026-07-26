@@ -42,6 +42,8 @@ Op een touch-apparaat schakelt het spel automatisch naar twee virtuele joysticks
   - Level 11 t/m 15: gouden munt (King)
   - Level 16 t/m 20: diamanten munt (Ace)
   - Level 21 en verder: de kampioensbokaal met een draakje — "You are on top of the world!"
+- Je voortgang (level + score) wordt automatisch opgeslagen; bij het herladen van de pagina kun je doorgaan waar je gebleven was.
+- Op het level-complete-scherm kun je met **Deel je resultaat** je level, trofee en score delen — via het native deelmenu (mobiel/tablet) of anders gekopieerd naar het klembord.
 
 ## Techniek
 
@@ -49,3 +51,5 @@ Op een touch-apparaat schakelt het spel automatisch naar twee virtuele joysticks
 - Doolhofgeneratie: `js/maze.js`
 - Scene, besturing, botsingsdetectie en spellogica: `js/game.js`
 - Trofeeën (SVG-munten en bokaal): `js/trophies.js`
+- Voortgang opslaan: `js/save.js`
+- Delen via sociale media: `js/share.js`
