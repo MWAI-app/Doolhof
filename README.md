@@ -36,12 +36,12 @@ Op een touch-apparaat schakelt het spel automatisch naar twee virtuele joysticks
 - Elk volgend level is groter en dus moeilijker.
 - Je scoort punten op basis van hoe snel je een level uitloopt; hogere levels leveren meer punten op.
 - De totale speeltijd en score zijn zichtbaar linksboven in beeld.
-- Elk voltooid level levert een trofee op:
-  - Level 1 t/m 5: bronzen munt (Boer)
-  - Level 6 t/m 10: zilveren munt (Queen)
-  - Level 11 t/m 15: gouden munt (King)
-  - Level 16 t/m 20: diamanten munt (Ace)
-  - Level 21 en verder: de kampioensbokaal met een draakje — "You are on top of the world!"
+- Elk voltooid level levert een trofee op, en binnen elke reeks van 5 levels stapelt het aantal op (bijv. level 2 → 2x Boer, level 7 → 2x Queen):
+  - Level 1 t/m 5: bronzen munt (Boer), 1 tot 5 stuks
+  - Level 6 t/m 10: zilveren munt (Queen), 1 tot 5 stuks
+  - Level 11 t/m 15: gouden munt (King), 1 tot 5 stuks
+  - Level 16 t/m 20: diamanten munt (Ace), 1 tot 5 stuks
+  - Level 21 en verder: de kampioensbokaal met een draakje (ook stapelend per 5 levels) — bij level 21 verschijnt eenmalig "You are on top of the world!"
 - Je voortgang (level + score) wordt automatisch opgeslagen; bij het herladen van de pagina kun je doorgaan waar je gebleven was.
 - Op het level-complete-scherm kun je met **Deel je resultaat** je level, trofee en score delen — via het native deelmenu (mobiel/tablet) of anders gekopieerd naar het klembord.
 

@@ -1,13 +1,15 @@
 const TIERS = [
-  { id: "bronze", maxLevel: 5, label: "Boer", colors: ["#f0c088", "#cd7f32", "#7a4a1e"] },
-  { id: "silver", maxLevel: 10, label: "Queen", colors: ["#f6f6f6", "#c0c0c0", "#6e6e6e"] },
-  { id: "gold", maxLevel: 15, label: "King", colors: ["#fff3b0", "#ffd700", "#a8790a"] },
-  { id: "diamond", maxLevel: 20, label: "Ace", colors: ["#ffffff", "#bfe9ff", "#4fa3d1"] },
+  { id: "bronze", minLevel: 1, maxLevel: 5, label: "Boer", colors: ["#f0c088", "#cd7f32", "#7a4a1e"] },
+  { id: "silver", minLevel: 6, maxLevel: 10, label: "Queen", colors: ["#f6f6f6", "#c0c0c0", "#6e6e6e"] },
+  { id: "gold", minLevel: 11, maxLevel: 15, label: "King", colors: ["#fff3b0", "#ffd700", "#a8790a"] },
+  { id: "diamond", minLevel: 16, maxLevel: 20, label: "Ace", colors: ["#ffffff", "#bfe9ff", "#4fa3d1"] },
 ];
 
-function coinSvg(tier) {
+const DRAGON_BUCKET_SIZE = 5;
+
+function coinSvg(tier, uid) {
   const [light, mid, dark] = tier.colors;
-  const gradId = `coin-grad-${tier.id}`;
+  const gradId = `coin-grad-${tier.id}-${uid}`;
   const letter = tier.label[0];
   return `
     <svg viewBox="0 0 100 100" class="trophy-icon" role="img" aria-label="${tier.label} munt">
@@ -25,21 +27,22 @@ function coinSvg(tier) {
   `;
 }
 
-function dragonCupSvg() {
+function dragonCupSvg(uid) {
+  const gradId = `cup-grad-${uid}`;
   return `
     <svg viewBox="0 0 100 120" class="trophy-icon trophy-cup" role="img" aria-label="Bokaal met draak">
       <defs>
-        <linearGradient id="cup-grad" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stop-color="#fff3b0" />
           <stop offset="50%" stop-color="#ffd700" />
           <stop offset="100%" stop-color="#a8790a" />
         </linearGradient>
       </defs>
-      <path d="M30 12 H70 V30 C70 45 60 52 50 52 C40 52 30 45 30 30 Z" fill="url(#cup-grad)" stroke="#7a5a0a" stroke-width="2"/>
+      <path d="M30 12 H70 V30 C70 45 60 52 50 52 C40 52 30 45 30 30 Z" fill="url(#${gradId})" stroke="#7a5a0a" stroke-width="2"/>
       <path d="M30 16 C18 16 14 26 20 34 C24 39 30 39 30 32" fill="none" stroke="#a8790a" stroke-width="3"/>
       <path d="M70 16 C82 16 86 26 80 34 C76 39 70 39 70 32" fill="none" stroke="#a8790a" stroke-width="3"/>
-      <rect x="46" y="52" width="8" height="18" fill="url(#cup-grad)" stroke="#7a5a0a" stroke-width="2"/>
-      <path d="M28 70 H72 L66 82 H34 Z" fill="url(#cup-grad)" stroke="#7a5a0a" stroke-width="2"/>
+      <rect x="46" y="52" width="8" height="18" fill="url(#${gradId})" stroke="#7a5a0a" stroke-width="2"/>
+      <path d="M28 70 H72 L66 82 H34 Z" fill="url(#${gradId})" stroke="#7a5a0a" stroke-width="2"/>
       <g transform="translate(46 6)">
         <path d="M-11 9 C-18 6 -19 -3 -11 -6 C-14 -2 -13 4 -7 6" fill="none" stroke="#1c6a38" stroke-width="2" stroke-linecap="round"/>
         <path d="M-4 -7 C-9 -12 -4 -17 2 -14 C-1 -11 0 -8 3 -7 Z" fill="#3fbf6b" stroke="#1c6a38" stroke-width="1.2"/>
@@ -55,15 +58,26 @@ function dragonCupSvg() {
   `;
 }
 
+function repeatSvg(buildIcon, count) {
+  return Array.from(
+    { length: count },
+    (_, i) => `<span class="trophy-item" style="--i:${i}">${buildIcon(i)}</span>`
+  ).join("");
+}
+
 export function getTrophy(level) {
   if (level > 20) {
+    const offset = level - 21;
+    const count = (offset % DRAGON_BUCKET_SIZE) + 1;
     return {
       id: "dragon-cup",
       label: "Kampioensbokaal",
-      svg: dragonCupSvg(),
-      motto: "You are on top of the world!",
+      count,
+      svg: repeatSvg((i) => dragonCupSvg(i), count),
+      motto: level === 21 ? "You are on top of the world!" : null,
     };
   }
   const tier = TIERS.find((t) => level <= t.maxLevel);
-  return { id: tier.id, label: tier.label, svg: coinSvg(tier), motto: null };
+  const count = level - tier.minLevel + 1;
+  return { id: tier.id, label: tier.label, count, svg: repeatSvg((i) => coinSvg(tier, i), count), motto: null };
 }

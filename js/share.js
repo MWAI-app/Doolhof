@@ -1,7 +1,7 @@
 const GAME_URL = "https://mwai-app.github.io/Doolhof/";
 
 function buildShareMessage(level, score, trophyLabel) {
-  return `Ik heb level ${level} gehaald in Doolhof en de ${trophyLabel}-trofee verdiend met een score van ${score}! Kun jij dat verslaan? 🏆🌀`;
+  return `Ik heb level ${level} gehaald in Doolhof met trofee ${trophyLabel} en een score van ${score}! Kun jij dat verslaan? 🏆🌀`;
 }
 
 export async function shareProgress(level, score, trophyLabel) {
