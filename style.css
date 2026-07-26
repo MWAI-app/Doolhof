@@ -73,19 +73,41 @@ canvas {
   opacity: 0.85;
 }
 
-#start-btn {
+#overlay-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
   margin-top: 16px;
+}
+
+#start-btn,
+#continue-btn {
   padding: 10px 28px;
   font-size: 18px;
   border: none;
   border-radius: 6px;
-  background: #4caf50;
   color: #fff;
   cursor: pointer;
 }
 
+#start-btn {
+  background: #4caf50;
+}
+
 #start-btn:hover {
   background: #43a047;
+}
+
+#continue-btn {
+  background: #2196f3;
+}
+
+#continue-btn:hover {
+  background: #1e88e5;
+}
+
+#continue-btn.hidden {
+  display: none;
 }
 
 #level-complete-box h2 {

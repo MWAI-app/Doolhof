@@ -3,6 +3,7 @@ import { PointerLockControls } from "three/addons/controls/PointerLockControls.j
 import { generateMaze } from "./maze.js";
 import { isTouchDevice, setupTouchControls } from "./touch-controls.js";
 import { getTrophy } from "./trophies.js";
+import { loadProgress, saveProgress, clearProgress } from "./save.js";
 
 const CELL_SIZE = 4;
 const WALL_HEIGHT = 3;
@@ -21,6 +22,7 @@ const overlay = document.getElementById("overlay");
 const overlayInstructions = document.getElementById("overlay-instructions");
 const overlayHint = document.getElementById("overlay-hint");
 const startBtn = document.getElementById("start-btn");
+const continueBtn = document.getElementById("continue-btn");
 const levelCompleteEl = document.getElementById("level-complete");
 const levelCompleteBox = document.getElementById("level-complete-box");
 const fullscreenBtn = document.getElementById("fullscreen-btn");
@@ -63,7 +65,7 @@ function enterImmersiveMode() {
 if (touchMode) {
   document.body.classList.add("touch-mode");
   overlayInstructions.textContent = "Vind de uitgang. Linker joystick: lopen. Rechter joystick: rondkijken.";
-  overlayHint.textContent = "Tik op Start om te beginnen.";
+  overlayHint.textContent = "Tik op een knop om te beginnen.";
 
   fullscreenBtn.classList.remove("hidden");
   fullscreenBtn.addEventListener("click", () => {
@@ -224,6 +226,9 @@ function completeLevel() {
   const points = Math.max(100, Math.round(2000 - levelTime * 15)) * level;
   score += points;
 
+  const nextLevel = level + 1;
+  saveProgress(nextLevel, score);
+
   const trophy = getTrophy(level);
   const mottoHtml = trophy.motto ? `<p class="trophy-motto">${trophy.motto}</p>` : "";
 
@@ -238,7 +243,6 @@ function completeLevel() {
   `;
   levelCompleteEl.classList.remove("hidden");
 
-  const nextLevel = level + 1;
   const resume = () => {
     levelCompleteEl.classList.add("hidden");
     levelCompleteEl.removeEventListener("click", resume);
@@ -298,14 +302,44 @@ function onKeyUp(e) {
 document.addEventListener("keydown", onKeyDown);
 document.addEventListener("keyup", onKeyUp);
 
-startBtn.addEventListener("click", () => {
+let hasBegun = false;
+const savedProgress = loadProgress();
+
+function unlockAndRun() {
+  overlay.classList.add("hidden");
   if (touchMode) {
-    overlay.classList.add("hidden");
     running = true;
     enterImmersiveMode();
   } else {
     controls.lock();
   }
+}
+
+function beginGame(startLevelNum, startScore) {
+  hasBegun = true;
+  score = startScore;
+  startLevel(startLevelNum);
+  continueBtn.classList.add("hidden");
+  startBtn.textContent = "Verder spelen";
+  unlockAndRun();
+}
+
+if (savedProgress) {
+  continueBtn.textContent = `Doorgaan (level ${savedProgress.level}, score ${savedProgress.score})`;
+  continueBtn.classList.remove("hidden");
+  startBtn.textContent = "Nieuw spel";
+  continueBtn.addEventListener("click", () => {
+    beginGame(savedProgress.level, savedProgress.score);
+  });
+}
+
+startBtn.addEventListener("click", () => {
+  if (hasBegun) {
+    unlockAndRun();
+    return;
+  }
+  clearProgress();
+  beginGame(1, 0);
 });
 
 controls.addEventListener("lock", () => {
